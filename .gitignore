@@ -3,3 +3,7 @@ UnityShader/Temp/
 UnityShader/Logs/
 UnityShader/obj/
 .idea/
+*.csproj
+*.sln
+UnityShader/Assets/Plugins/Editor/JetBrains/
+UnityShader/Assets/Plugins/Editor/JetBrains.meta

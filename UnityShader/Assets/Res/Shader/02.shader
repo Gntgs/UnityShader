@@ -1,6 +1,6 @@
 ﻿// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
 
-Shader "Custom/01"
+Shader "Custom/02"
 {
     Properties
     {
@@ -11,7 +11,7 @@ Shader "Custom/01"
     {
         Tags { "RenderType"="Opaque" }
         
-        // 漫反射 逐顶点
+        // 漫反射 逐像素
         
         // 公式   ( n * l ) * Mdiffuse * CLight
         
@@ -42,7 +42,7 @@ Shader "Custom/01"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float3 color : COLOR0;
+                float3 worldNormal : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -52,23 +52,21 @@ Shader "Custom/01"
             v2f vert (appdata v)
             {
                 v2f o;
-                
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                
-                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
-                fixed3 worldLightDir = normalize(_WorldSpaceLightPos0.xyz);
-                fixed3 worldNormal = normalize(mul(v.normal,unity_WorldToObject));
-                fixed3 lightColor = _LightColor0.rgb;
-                fixed3 color = lightColor * saturate(dot(worldNormal,worldLightDir)) * _MainColor;
-                o.color = color + ambient;
+                o.worldNormal = normalize(mul(v.normal,unity_WorldToObject));
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                col = col * float4(i.color,1.0);
+                fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;
+                fixed3 worldLightDir = normalize(_WorldSpaceLightPos0.xyz);
+                fixed3 lightColor = _LightColor0.rgb;
+                fixed3 color = lightColor * saturate(dot(i.worldNormal,worldLightDir)) * _MainColor;
+                
+                col = (col * fixed4(color,1.0)) + fixed4(ambient,1.0);
                 return col;
             }
             ENDCG
