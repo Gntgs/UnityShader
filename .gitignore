@@ -1,3 +1,5 @@
 UnityShader/Library/
 UnityShader/Temp/
 UnityShader/Logs/
+UnityShader/obj/
+.idea/
